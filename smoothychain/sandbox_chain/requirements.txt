@@ -1,0 +1,3 @@
+Flask==0.10.1
+pysandbox==1.5.1
+gunicorn==19.7.1

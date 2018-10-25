@@ -1,0 +1,12 @@
+.profile .row {
+  margin-top: 20px;
+}
+
+.profile .row:last-child {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.profile .row .content {
+  padding-left: 10px;
+}

@@ -1,0 +1,24 @@
+variables:
+  IMAGE: pentesters/ctfzone-2017-finals/ch4ng3.org
+
+stages:
+  - build
+  - release
+
+build:
+  stage: build
+  image: docker:latest
+  script:
+    - docker build -t $CI_REGISTRY/$IMAGE:latest .
+
+release:
+  stage: release
+  image: docker:latest
+  dependencies:
+    - build
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+  script:
+    - docker push $CI_REGISTRY/$IMAGE:latest
+  only:
+    - master

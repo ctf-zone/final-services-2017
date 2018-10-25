@@ -1,0 +1,44 @@
+#
+# BACKEND
+#
+
+# Ignore bundler config.
+backend/.bundle
+
+# Ignore the default SQLite database.
+backend/db/*.sqlite3
+backend/db/*.sqlite3-journal
+
+# Ignore all logfiles and tempfiles.
+backend/log/*
+backend/tmp/*
+backend/!/log/.keep
+backend/!/tmp/.keep
+
+# Ignore encrypted secrets key file.
+backend/config/secrets.yml.key
+
+#
+# FRONTEND
+#
+
+# dependencies
+frontend/node_modules
+
+# production
+frontend/build
+
+# logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+#
+# MISC
+#
+
+# misc
+.DS_Store
+
+# db_data
+db_data/

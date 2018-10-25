@@ -1,0 +1,19 @@
+version: '2'
+services:
+  db:
+    image: postgres
+    container_name: smoothychain-db
+    environment:
+      POSTGRES_USER: smoothychain
+      POSTGRES_PASSWORD: smoothychain
+      POSTGRES_DB: smoothychain
+  smoothychain:
+    build: .
+    image: smoothychain
+    container_name: smoothychain
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./team_service:/home/smoothychain

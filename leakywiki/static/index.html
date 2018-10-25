@@ -1,0 +1,300 @@
+<!DOCTYPE HTML>
+<!--
+	Fractal by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>LeakyWiki - Secure file storage</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+	</head>
+	<body id="top">
+
+		<!-- Header -->
+			<header id="header">
+				<div class="content">
+					<h1><a href="#">LeakyWiki</a></h1>
+					<p>Cloud file storage<br />
+					Easy to use, anonymous and secure</p>
+					<ul class="actions">
+						<li><a href="#one" class="button icon fa-chevron-down scrolly">Start using now</a></li>
+					</ul>
+				</div>
+			</header>
+
+		<!-- One -->
+			<section id="one" class="wrapper style2 special">
+
+				<div class="inner">
+
+					<header class="major">
+						<h2>Upload your files</h2>
+					</header>
+
+					
+					<div class="row uniform">
+						<div style="width:80%">
+							<input type="text" name="token" id="upload-token" value="" placeholder="Token" />
+						</div>
+						<div style="width:20%">
+							<span class="button special" style="width:100%" id="generate-token">Generate</span>
+						</div>
+					</div>
+
+					<div class="row uniform" id="generate-token-error"></div>
+
+					<div class="row uniform">
+						<div style="width:80%">
+							<input type="text" name="file" id="upload-filename" value="" placeholder="File" disabled/>
+						</div>
+						<div style="width:20%">
+							<span class="button special" style="width:100%" id="select-file" onclick="$('#select-file-input').click();">Select file</span>
+						</div>
+					</div>
+
+					<div class="row uniform" id="upload-file-status"></div>
+					<input id="select-file-input" type="file" style="visibility:hidden" />
+
+					<div class="row uniform">
+						<div style="width:100%">
+							<span class="button special icon fa-upload fit" id="upload-file">Upload</span>
+						</div>
+					</div>
+				</div>
+
+			</section>
+
+		<!-- Two -->
+			<section id="two" class="wrapper">
+				<div class="inner">
+
+					<header class="major">
+						<h2>List your files</h2>
+					</header>
+
+					<div class="row uniform">
+						<div style="width:80%">
+							<input type="text" name="token" id="list-token" value="" placeholder="Token" />
+						</div>
+						<div style="width:20%">
+							<span class="button special" style="width:100%" id="list-files">List</span>
+						</div>
+					</div>
+
+					<div class="row uniform" id="list-files-status"></div>
+
+					<br/>
+
+					<div class="table-wrapper" id="files-table"></div>
+				</div>
+			</section>
+
+		<!-- Footer -->
+			<footer id="footer">
+				<p class="copyright">&copy; Copyright 2017 CTFZone</a>. Design credits: <a href="http://html5up.net">HTML5 UP</a></p>
+			</footer>
+
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+			<script src="assets/js/main.js"></script>
+
+			<script>
+				function generateStatusLabel(id, status, isError) {
+					var bgColor;
+					if (isError) {
+						bgColor = "#dd4b39";
+					} else {
+						bgColor = "#268b0d";
+					}
+					return `<div id="${id}" style="width:100%"><span class="label" style="width:100%;background-color:${bgColor};color:#fff;">${status}</span></div>`
+				}
+
+				$("#select-file-input").change(function () {
+					var fullPath = this.value;
+					var filename = "";
+					if (fullPath) {
+						var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+						filename = fullPath.substring(startIndex);
+						if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+							filename = filename.substring(1);
+						}
+					}
+					
+					$("#upload-filename").val(filename);
+					$("#upload-file-status-msg").remove();
+				});
+
+				$("#generate-token").click(function(event) {
+					$("#generate-token-error-msg").remove();
+
+					$.get("/api/token", function(data) {
+						if (data["status"] == "OK") {
+							$("#upload-token").val(data["token"])
+						} else {
+							var error;
+							if (data["error"]) {
+								error = data["error"];
+							} else {
+								error = "Cannot generate token";
+							}
+
+							$("#generate-token-error").append(
+								generateStatusLabel("generate-token-error-msg", error, true)
+							);
+						}
+					}).fail(function() {
+						$("#generate-token-error").append(
+							generateStatusLabel("generate-token-error-msg", "Server error", true)
+						);
+					})
+				});
+
+				$("#upload-token").change(function() {
+					$("#generate-token-error-msg").remove();
+				});
+
+				$("#upload-file").click(function(event){
+					$("#generate-token-error-msg").remove();
+					$("#upload-file-status-msg").remove();
+
+					var token = $("#upload-token").val();
+					var filename = $("#upload-filename").val();
+
+					if (!token)
+					{
+						$("#generate-token-error").append(
+							generateStatusLabel("generate-token-error-msg", "Empty token", true)
+						);
+						return;
+					}
+
+					if (!filename)
+					{
+						$("#upload-file-status").append(
+							generateStatusLabel("upload-file-status-msg", "Empty filename", true)
+						);
+						return;
+					}
+
+					var reader = new FileReader();
+					reader.onload = function(readerEvt) {
+						var binaryString = readerEvt.target.result;
+						var b64data = btoa(binaryString);
+
+						$.ajax({url:"/api/upload?token=" + token,
+								type:"POST",
+								data:JSON.stringify({"filename": filename, "data": b64data}),
+								contentType:"application/json",
+								dataType:"json",
+								success: function(data){
+									if (data["status"] == "OK") {
+										$("#upload-file-status").append(
+											generateStatusLabel("upload-file-status-msg", "Success", false)
+										);
+									} else {
+										var error;
+										if (data["error"]) {
+											error = data["error"];
+										} else {
+											error = "Cannot upload file";
+										}
+
+										$("#upload-file-status").append(
+											generateStatusLabel("upload-file-status-msg", error, true)
+										);
+									}
+								},
+								error: function() {
+									$("#upload-file-status").append(
+										generateStatusLabel("upload-file-status-msg", "Server error", true)
+									);
+								}
+						});
+					};
+
+					var filesSelected = document.getElementById("select-file-input").files;
+					reader.readAsBinaryString(filesSelected[0]);
+
+				});
+
+				$("#list-files").click(function(event){
+					var token = $("#list-token").val();
+
+					$("#list-files-status-msg").remove();
+					$("#files-table-content").remove();
+
+					if (!token)
+					{
+						$("#list-files-status").append(
+							generateStatusLabel("list-files-status-msg", "Empty token", true)
+						);
+						return;
+					}
+
+					$.get("/api/list?token=" + token, function(data) {
+						if (data["status"] == "OK") {
+							$("#list-files-status-msg").remove();
+
+							var files = data["files"];
+							
+							if (files.length > 0)
+							{
+								var table = "<table id=\"files-table-content\">";
+								table += "<thead><tr><th>Filename</th></th></tr></thead>";
+								table += "<tbody>"
+
+								for (var i = 0; i < files.length; i++)
+								{
+									var filename = $('<td>').text(files[i]).html();
+									var link = $('<td>').text(`/api/download/${token}/${files[i]}`).html();
+
+									table += "<tr>";
+									table += `<td style="width:80%">${filename}</td>`
+									table += `<td><a href="${link}" class="button special" style="width:100%">Download</a></td>`;
+									table += "</tr>";
+								}
+
+								table += "</tbody>";
+								table += "</table>";
+
+								$("#files-table").append(table);
+							}
+							else
+							{
+								$("#list-files-status").append(
+									generateStatusLabel("list-files-status-msg", "You haven't uploaded files", false)
+								);
+							}
+						} else {
+							var error;
+							if (data["error"]) {
+								error = data["error"];
+							} else {
+								error = "Cannot get file list";
+							}
+
+							$("#list-files-status").append(
+								generateStatusLabel("list-files-status-msg", error, true)
+							);
+						}
+					}).fail(function() {
+						$("#list-files-status").append(
+							generateStatusLabel("list-files-status-msg", "Server error", true)
+						);
+					});
+				});
+			</script>
+
+	</body>
+</html>

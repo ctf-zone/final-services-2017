@@ -1,0 +1,10 @@
+FROM php:7.0-apache
+COPY application /var/www/html/application/
+COPY public /var/www/html/public/
+COPY mysql_init.sh /opt/
+COPY bank_new.sql /opt
+COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
+
+RUN apt-get update && apt-get install -y mysql-client libmcrypt-dev && docker-php-ext-install pdo pdo_mysql mcrypt mbstring 
+
+CMD /opt/mysql_init.sh

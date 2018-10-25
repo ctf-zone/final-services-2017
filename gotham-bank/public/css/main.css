@@ -1,0 +1,87 @@
+.login-form {
+	/*height: calc(100vh - 90px);*/
+	margin-top: 50px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.register-form {
+	/*height: calc(100vh - 90px);*/
+	margin-top: 50px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.form-button {
+	padding: 2px;
+	width: 100%;
+	margin-top: 10px;
+}
+
+.support-form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 32px;
+	margin-top: 16px;
+}
+
+.payment_info {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 32px;
+	margin-top: 16px;
+}
+
+.transactions {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 32px;
+	margin-top: 16px;
+}
+
+.card2card-form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 32px;
+	margin-top: 16px;
+}
+
+.settings-form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 32px;
+	margin-top: 16px;
+}
+
+.export-menu {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 32px;
+	margin-top: 16px;
+}
+
+.about {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 32px;
+	margin-top: 16px;
+}
+
+.main-page {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 32px;
+	margin-top: 16px;
+}
